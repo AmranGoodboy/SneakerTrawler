@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Sole Watch — Phase 0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F1F2ED;
+    --surface: #FFFFFF;
+    --ink: #1C1F26;
+    --ink-soft: #565C66;
+    --muted: #8A8F98;
+    --line: #E1E3DC;
+    --accent: #FF5A36;
+    --accent-ink: #FFFFFF;
+    --hit: #1E9E64;
+    --hit-bg: #E7F6EE;
+    --warn-bg: #FFF3EE;
+    --shadow: 0 1px 2px rgba(28,31,38,0.04), 0 8px 24px -12px rgba(28,31,38,0.12);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 20px 80px;}
+
+  /* Header */
+  header{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:22px;}
+  .brand{display:flex;align-items:baseline;gap:14px;}
+  .brand h1{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:44px;
+    letter-spacing:0.5px;
+    margin:0;
+    line-height:1;
+  }
+  .brand h1 span{color:var(--accent);}
+  .phase-pill{
+    display:inline-flex;align-items:center;gap:6px;
+    background:var(--ink);color:#fff;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;font-weight:700;letter-spacing:0.4px;
+    padding:6px 10px;border-radius:20px;
+    text-transform:uppercase;
+  }
+  .phase-pill::before{content:"●";color:var(--accent);}
+  .scope{font-size:13px;color:var(--ink-soft);margin-top:6px;max-width:520px;}
+
+  .stats{display:flex;gap:10px;flex-wrap:wrap;}
+  .stat{
+    background:var(--surface);border:1px solid var(--line);border-radius:10px;
+    padding:10px 16px;min-width:96px;text-align:center;box-shadow:var(--shadow);
+  }
+  .stat b{display:block;font-family:'JetBrains Mono',monospace;font-size:20px;}
+  .stat span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;}
+  .stat.hit b{color:var(--hit);}
+
+  /* Toolbar */
+  .toolbar{
+    background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    padding:16px;margin-bottom:18px;box-shadow:var(--shadow);
+  }
+  .toolbar-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;}
+  .field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:120px;}
+  .field.small{max-width:130px;flex:none;}
+  .field label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.3px;}
+  select, input{
+    font-family:'Inter',sans-serif;font-size:13.5px;
+    padding:8px 10px;border-radius:8px;border:1px solid var(--line);
+    background:#fff;color:var(--ink);
+  }
+  select:focus, input:focus{outline:2px solid var(--accent);outline-offset:1px;}
+  .toggle-row{display:flex;align-items:center;gap:8px;margin-top:12px;}
+  .toggle-row label{font-size:13px;color:var(--ink-soft);display:flex;align-items:center;gap:6px;cursor:pointer;}
+  .toggle-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;}
+
+  .btn{
+    font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;
+    padding:9px 16px;border-radius:8px;border:1px solid transparent;
+    cursor:pointer;white-space:nowrap;
+  }
+  .btn-primary{background:var(--ink);color:#fff;}
+  .btn-primary:hover{background:#000;}
+  .btn-accent{background:var(--accent);color:var(--accent-ink);}
+  .btn-accent:hover{background:#e34a28;}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--ink-soft);}
+  .btn-ghost:hover{border-color:var(--ink-soft);color:var(--ink);}
+  .btn-danger{background:transparent;color:#B3261E;border:1px solid #F1CFCB;}
+  .btn-danger:hover{background:#FDEDEC;}
+  .btn-sm{padding:6px 10px;font-size:12px;}
+
+  /* Cards */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+  .card{
+    background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    padding:16px;box-shadow:var(--shadow);position:relative;
+    border-top:3px solid var(--line);
+  }
+  .card.hit{border-top-color:var(--hit);}
+  .card-top{display:flex;justify-content:space-between;gap:8px;}
+  .card-brand{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;}
+  .card-name{font-size:16px;font-weight:700;margin:2px 0 8px;line-height:1.25;}
+  .card-tag{
+    font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;
+    padding:3px 8px;border-radius:20px;white-space:nowrap;height:fit-content;
+  }
+  .card-tag.hit{background:var(--hit-bg);color:var(--hit);}
+  .card-tag.watch{background:var(--warn-bg);color:var(--accent);}
+  .meta-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+  .chip{
+    font-size:11px;color:var(--ink-soft);background:var(--bg);
+    padding:3px 8px;border-radius:6px;border:1px solid var(--line);
+  }
+  .price-row{display:flex;align-items:baseline;gap:8px;margin:10px 0 6px;}
+  .price-now{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;}
+  .price-was{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);text-decoration:line-through;}
+  .discount-badge{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--accent);}
+
+  .meter{height:6px;background:var(--bg);border-radius:4px;overflow:hidden;margin:8px 0 4px;border:1px solid var(--line);}
+  .meter-fill{height:100%;background:var(--accent);}
+  .meter-fill.hit{background:var(--hit);}
+  .meter-label{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+
+  .card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:10px;border-top:1px dashed var(--line);}
+  .retailer-link{font-size:12.5px;color:var(--ink);font-weight:600;text-decoration:none;}
+  .retailer-link:hover{color:var(--accent);}
+  .card-actions{display:flex;gap:6px;}
+  .icon-btn{
+    background:transparent;border:1px solid var(--line);border-radius:6px;
+    width:28px;height:28px;cursor:pointer;font-size:13px;color:var(--ink-soft);
+  }
+  .icon-btn:hover{border-color:var(--ink-soft);color:var(--ink);}
+  .notes{font-size:12px;color:var(--ink-soft);margin-top:8px;font-style:italic;}
+  .updated{font-size:10.5px;color:var(--muted);margin-top:6px;}
+
+  .empty{
+    background:var(--surface);border:1px dashed var(--line);border-radius:14px;
+    padding:50px 20px;text-align:center;color:var(--ink-soft);
+  }
+  .empty h3{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:0.5px;margin:0 0 6px;color:var(--ink);}
+
+  /* Modal */
+  .overlay{
+    position:fixed;inset:0;background:rgba(20,22,26,0.5);
+    display:none;align-items:center;justify-content:center;padding:20px;z-index:50;
+  }
+  .overlay.open{display:flex;}
+  .modal{
+    background:#fff;border-radius:16px;max-width:640px;width:100%;
+    max-height:88vh;overflow-y:auto;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,0.25);
+  }
+  .modal h2{font-family:'Bebas Neue',sans-serif;font-size:28px;margin:0 0 16px;letter-spacing:0.4px;}
+  .import-box{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:18px;}
+  .import-box label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.3px;display:block;margin-bottom:6px;}
+  .import-box textarea{flex:1;min-height:44px;font-family:'JetBrains Mono',monospace;font-size:12px;}
+  .import-hint{font-size:11.5px;color:var(--muted);margin-top:8px;line-height:1.4;}
+  .import-hint.success{color:var(--hit);}
+  .import-hint.error{color:#B3261E;}
+  .modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .modal-grid .full{grid-column:1 / -1;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+  textarea{
+    font-family:'Inter',sans-serif;font-size:13.5px;padding:8px 10px;
+    border-radius:8px;border:1px solid var(--line);resize:vertical;min-height:52px;
+  }
+
+  footer{margin-top:36px;font-size:12px;color:var(--muted);text-align:center;}
+  @media(max-width:640px){ .modal-grid{grid-template-columns:1fr;} }
+
+  .toast{
+    position:fixed;bottom:24px;right:24px;z-index:100;
+    background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;
+    font-size:13.5px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,0.25);
+    display:flex;align-items:center;gap:8px;
+    opacity:0;transform:translateY(8px);transition:opacity 0.2s, transform 0.2s;
+    pointer-events:none;
+  }
+  .toast.show{opacity:1;transform:translateY(0);}
+  .toast.success{background:var(--hit);}
+  .toast.error{background:#B3261E;}
+
+  .field-error{border-color:#B3261E !important; background:#FDEDEC;}
+  .form-error-summary{
+    background:#FDEDEC;color:#B3261E;border:1px solid #F1CFCB;border-radius:8px;
+    padding:10px 12px;font-size:13px;font-weight:600;margin-bottom:14px;
+  }
+
+  .shot-drop{
+    margin-top:10px;border:1.5px dashed var(--muted);border-radius:8px;
+    padding:12px;text-align:center;font-size:12.5px;color:var(--ink-soft);
+    cursor:text;background:#fff;
+  }
+  .shot-drop:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent);}
+  .image-thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+  .thumb{position:relative;width:64px;height:64px;border-radius:8px;overflow:hidden;border:1px solid var(--line);}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .thumb-remove{
+    position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;
+    background:rgba(0,0,0,0.65);color:#fff;border:none;font-size:12px;line-height:1;cursor:pointer;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <div class="brand">
+        <h1>Sole<span>Watch</span></h1>
+        <span class="phase-pill">Phase 0 · Manual</span>
+      </div>
+      <div class="scope">Sport shoes (running, trainers, boxing, football, gym & more) · Malaysia · top 10 retailers</div>
+      <div class="scope" id="storage-mode" style="color:var(--accent);"></div>
+    </div>
+    <div class="stats" id="stats"></div>
+    <button class="btn btn-ghost" id="btn-settings" style="align-self:flex-start;">⚙ API Key</button>
+  </header>
+
+  <div class="toolbar">
+    <div class="toolbar-row">
+      <div class="field" style="flex:1.4;min-width:180px;">
+        <label>Search</label>
+        <input id="f-search" type="text" placeholder="Brand or item name…">
+      </div>
+      <div class="field small">
+        <label>Shoe type</label>
+        <select id="f-type"><option value="">All</option></select>
+      </div>
+      <div class="field small">
+        <label>Gender</label>
+        <select id="f-gender"><option value="">All</option></select>
+      </div>
+      <div class="field small">
+        <label>Brand</label>
+        <select id="f-brand"><option value="">All</option></select>
+      </div>
+      <div class="field small">
+        <label>Retailer</label>
+        <select id="f-retailer"><option value="">All</option></select>
+      </div>
+      <div class="field small">
+        <label>Min price (RM)</label>
+        <input id="f-min" type="number" min="0" placeholder="0">
+      </div>
+      <div class="field small">
+        <label>Max price (RM)</label>
+        <input id="f-max" type="number" min="0" placeholder="500">
+      </div>
+      <div class="field small">
+        <label>Sort by</label>
+        <select id="f-sort">
+          <option value="discount-desc">Discount % (high→low)</option>
+          <option value="price-asc">Price (low→high)</option>
+          <option value="date-desc">Recently added</option>
+        </select>
+      </div>
+      <button class="btn btn-ghost" id="btn-export">⬇ Export backup</button>
+      <button class="btn btn-ghost" id="btn-import-file">⬆ Import backup</button>
+      <input type="file" id="import-file-input" accept="application/json" style="display:none;">
+      <button class="btn btn-ghost" id="btn-dedupe">⧉ Remove duplicates</button>
+      <button class="btn btn-ghost" id="btn-bulk">⇩ Bulk import</button>
+      <button class="btn btn-accent" id="btn-add">+ Add deal</button>
+    </div>
+    <div class="toggle-row">
+      <label><input type="checkbox" id="f-hitonly"> Only show items at/past my target discount</label>
+      <label style="margin-left:16px;"><input type="checkbox" id="f-instock"> Only show in-stock items</label>
+    </div>
+  </div>
+
+  <div id="list" class="grid"></div>
+  <div id="empty" class="empty" style="display:none;">
+    <h3>No deals tracked yet</h3>
+    <p>Add the sport shoes you're watching — I'll flag the ones that hit your target discount.</p>
+  </div>
+
+  <footer>Data saves automatically to this browser/file. Before switching to a new version of this tool, click "Export backup" — then "Import backup" on the new version to carry your list over.</footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Modal -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2 id="modal-title">Add a deal</h2>
+
+    <div class="import-box">
+      <label>Paste a product link, or a details snippet from Claude</label>
+      <div style="display:flex;gap:8px;">
+        <textarea id="m-import" rows="2" placeholder="Paste a product URL here, or paste the {...} snippet Claude gave you in chat"></textarea>
+        <button class="btn btn-ghost" id="btn-import" style="align-self:flex-start;">Fill form</button>
+      </div>
+      <div class="import-hint" id="import-hint">Paste a link/snippet Claude gave you, or — for sites Claude can't fetch — copy the product title + price text straight off the page and paste it here.</div>
+
+      <div class="shot-drop" id="m-shot-drop" tabindex="0">📷 Paste screenshot(s) of the product page anywhere in this window (Ctrl+V) — you can paste more than one</div>
+      <div class="import-hint" style="margin-top:4px;">Note: this calls Claude's API directly from the page. Free automatically inside Claude.ai (chat/desktop); elsewhere it uses your own API key from "⚙ API Key" above.</div>
+      <div class="image-thumbs" id="m-image-thumbs" style="display:none;"></div>
+    </div>
+
+    <div class="modal-grid">
+      <div class="field"><label>Brand *</label><input id="m-brand" placeholder="e.g. Nike"></div>
+      <div class="field"><label>Item name *</label><input id="m-name" placeholder="e.g. Air Zoom Pegasus 41"></div>
+
+      <div class="field">
+        <label>Shoe type *</label>
+        <select id="m-type">
+          <option>Running</option><option>Trainers / Lifestyle</option><option>Boxing</option>
+          <option>Football / Boots</option><option>Basketball</option><option>Gym / Training</option>
+          <option>Hiking / Outdoor</option><option>Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Gender</label>
+        <select id="m-gender"><option>Men's</option><option>Women's</option><option>Unisex</option><option>Kids'</option></select>
+      </div>
+
+      <div class="field">
+        <label>Colour</label>
+        <select id="m-colour">
+          <option value="">Select colour…</option>
+          <option>Black</option><option>White</option><option>Black/White</option>
+          <option>Grey</option><option>Blue</option><option>Navy</option>
+          <option>Red</option><option>Green</option><option>Yellow</option>
+          <option>Orange</option><option>Pink</option><option>Purple</option>
+          <option>Beige</option><option>Multicolour</option>
+          <option value="__other__">Other (type below)…</option>
+        </select>
+      </div>
+      <div class="field" id="m-colour-other-wrap" style="display:none;">
+        <label>Colour (exact)</label>
+        <input id="m-colour-other" placeholder="e.g. Yellow Alert-PUMA White">
+      </div>
+
+      <div class="field" style="display:flex;flex-direction:row;gap:8px;">
+        <div style="flex:1;">
+          <label>Size</label>
+          <select id="m-size">
+            <option value="">Select…</option>
+            <option>3</option><option>3.5</option><option>4</option><option>4.5</option>
+            <option>5</option><option>5.5</option><option>6</option><option>6.5</option>
+            <option>7</option><option>7.5</option><option>8</option><option>8.5</option>
+            <option>9</option><option>9.5</option><option>10</option><option>10.5</option>
+            <option>11</option><option>11.5</option><option>12</option><option>12.5</option>
+            <option>13</option><option>13.5</option><option>14</option>
+            <option value="__other__">Other…</option>
+          </select>
+        </div>
+        <div style="flex:1;"><label>System</label>
+          <select id="m-sizesys"><option>UK</option><option>US</option><option>EU</option></select>
+        </div>
+      </div>
+      <div class="field full" id="m-size-other-wrap" style="display:none;">
+        <label>Size (exact)</label>
+        <input id="m-size-other" placeholder="e.g. 9.5 or One Size">
+      </div>
+
+      <div class="field"><label>Current price (RM) *</label><input id="m-price" type="number" min="0" step="0.01" placeholder="199.00"></div>
+      <div class="field"><label>Original price (RM)</label><input id="m-original" type="number" min="0" step="0.01" placeholder="Leave blank = same as current"></div>
+
+      <div class="field"><label>Target discount (%)</label><input id="m-target" type="number" min="0" max="95" placeholder="30"></div>
+      <div class="field">
+        <label>Stock status</label>
+        <select id="m-stock"><option>In stock</option><option>Low stock</option><option>Out of stock</option><option>Unknown</option></select>
+      </div>
+
+      <div class="field">
+        <label>Retailer *</label>
+        <select id="m-retailer">
+          <option value="">Select retailer…</option>
+          <option>Sports Direct MY</option>
+          <option>Nike MY</option>
+          <option>Puma MY</option>
+          <option>Adidas MY</option>
+          <option>Under Armour MY</option>
+          <option>On MY</option>
+          <option>New Balance MY</option>
+          <option>Decathlon MY</option>
+          <option>JD Sports MY</option>
+          <option>Al-Ikhsan Sports</option>
+          <option>Royal Sporting House</option>
+          <option>World of Sports</option>
+          <option value="__other__">Other (type below)…</option>
+        </select>
+      </div>
+      <div class="field" id="m-retailer-other-wrap" style="display:none;">
+        <label>Retailer name</label>
+        <input id="m-retailer-other" placeholder="e.g. Some Retailer MY">
+      </div>
+      <div class="field"><label>Website / domain</label><input id="m-website" placeholder="e.g. sportsdirect.com.my"></div>
+
+      <div class="field full"><label>Product URL</label><input id="m-url" placeholder="https://…"></div>
+      <div class="field full"><label>Notes</label><textarea id="m-notes" placeholder="e.g. waiting for restock in size 9"></textarea></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="btn-cancel">Cancel</button>
+      <button class="btn btn-primary" id="btn-save">Save deal</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk import modal -->
+<div class="overlay" id="bulk-overlay">
+  <div class="modal">
+    <h2>Bulk import</h2>
+    <div class="import-box" style="margin-bottom:14px;">
+      <label>How this works</label>
+      <div class="import-hint" style="margin-top:0;">Paste several product links to Claude in chat and paste back the JSON array it gives you — OR paste screenshots of multiple product pages directly below. Everything found gets added at once.</div>
+      <div class="shot-drop" id="bulk-shot-drop" tabindex="0">📷 Paste screenshot(s) anywhere in this window (Ctrl+V) — one or many products across as many images as you need</div>
+      <div class="import-hint" style="margin-top:4px;">Note: this calls Claude's API directly from the page. Free automatically inside Claude.ai (chat/desktop); elsewhere it uses your own API key from "⚙ API Key" above.</div>
+      <div class="image-thumbs" id="bulk-image-thumbs" style="display:none;"></div>
+    </div>
+    <div class="field full" style="margin-bottom:10px;">
+      <label>Or paste JSON array here</label>
+      <textarea id="bulk-input" rows="6" placeholder='[ {"brand":"Nike", "name":"...", ...}, {"brand":"Adidas", ...} ]'></textarea>
+    </div>
+    <div class="field small" style="margin-bottom:14px;">
+      <label>Default target discount (%) for all imported items</label>
+      <input id="bulk-target" type="number" min="0" max="95" value="20">
+    </div>
+    <div class="import-hint" id="bulk-hint"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="btn-bulk-cancel">Cancel</button>
+      <button class="btn btn-primary" id="btn-bulk-save">Import all</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings modal -->
+<div class="overlay" id="settings-overlay">
+  <div class="modal">
+    <h2>API Key</h2>
+    <div class="import-box" style="margin-bottom:14px;">
+      <label>Why this is needed</label>
+      <div class="import-hint" style="margin-top:0;">Screenshot-reading calls Claude's API. Inside Claude.ai (chat/desktop) that works automatically, free. Running this as a hosted/local page outside Claude.ai, it needs your own Anthropic API key instead — get one at <span style="text-decoration:underline;">console.anthropic.com</span>. Your key is stored only in this browser and sent directly to Anthropic — never anywhere else, never seen by Claude or Anthropic support.</div>
+    </div>
+    <div class="field full" style="margin-bottom:14px;">
+      <label>Anthropic API key</label>
+      <input id="settings-apikey" type="password" placeholder="sk-ant-…" autocomplete="off">
+    </div>
+    <div class="import-hint" id="settings-hint"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="btn-settings-remove">Remove key</button>
+      <button class="btn btn-ghost" id="btn-settings-cancel">Cancel</button>
+      <button class="btn btn-primary" id="btn-settings-save">Save key</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'solewatch:deals';
+const SETTINGS_KEY = 'solewatch:settings';
+let settings = {apiKey: ''};
+
+async function loadSettings(){
+  try{
+    const val = await storageGet(SETTINGS_KEY);
+    settings = val ? JSON.parse(val) : {apiKey:''};
+  }catch(e){ settings = {apiKey:''}; }
+}
+async function saveSettings(){
+  try{ return await storageSet(SETTINGS_KEY, JSON.stringify(settings)); }
+  catch(e){ return false; }
+}
+let deals = [];
+let editingId = null;
+let addModalImages = []; // base64 (no prefix) screenshots pasted into the Add Deal modal
+let bulkModalImages = []; // base64 (no prefix) screenshots pasted into the Bulk Import modal
+
+// window.storage only exists inside the Claude.ai artifact viewer. When this file
+// is opened directly (e.g. downloaded and opened from disk), fall back to the
+// browser's built-in localStorage so saving still works.
+const hasCloudStorage = (typeof window.storage !== 'undefined' && window.storage && typeof window.storage.get === 'function');
+
+async function storageGet(key){
+  if(hasCloudStorage){
+    const res = await window.storage.get(key, false);
+    return res ? res.value : null;
+  }
+  return localStorage.getItem(key);
+}
+async function storageSet(key, value){
+  if(hasCloudStorage){
+    const res = await window.storage.set(key, value, false);
+    return !!res;
+  }
+  localStorage.setItem(key, value);
+  return true;
+}
+
+async function loadDeals(){
+  try{
+    const val = await storageGet(STORAGE_KEY);
+    deals = val ? JSON.parse(val) : [];
+  }catch(e){
+    deals = [];
+  }
+  render();
+  updateStorageBadge();
+}
+
+async function saveDeals(){
+  for(let attempt=0; attempt<2; attempt++){
+    try{
+      const ok = await storageSet(STORAGE_KEY, JSON.stringify(deals));
+      if(ok) return true;
+    }catch(e){
+      console.error('Storage error (attempt '+(attempt+1)+')', e);
+      if(attempt===0) await new Promise(r=>setTimeout(r, 600)); // brief pause, retry once
+    }
+  }
+  return false;
+}
+
+function updateStorageBadge(){
+  const el = document.getElementById('storage-mode');
+  if(!el) return;
+  el.textContent = hasCloudStorage ? '' : '⚠ Saving locally to this browser only (not synced) — see note below';
+}
+
+let toastTimer = null;
+function showToast(msg, type){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (type ? ' '+type : '');
+  clearTimeout(toastTimer);
+  const duration = Math.min(6000, 2400 + Math.max(0, msg.length-40)*30);
+  toastTimer = setTimeout(()=>{ el.classList.remove('show'); }, duration);
+}
+
+// ---------- Screenshot capture + extraction ----------
+
+function compressImageToBase64(blob, maxDim=1400, quality=0.82){
+  return new Promise((resolve, reject)=>{
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    img.onload = ()=>{
+      let {width, height} = img;
+      if(width > maxDim || height > maxDim){
+        const scale = maxDim / Math.max(width, height);
+        width = Math.round(width*scale);
+        height = Math.round(height*scale);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL('image/jpeg', quality).split(',')[1]);
+    };
+    img.onerror = (e)=>{ URL.revokeObjectURL(url); reject(e); };
+    img.src = url;
+  });
+}
+
+function renderThumbs(imagesArray, containerId){
+  const el = document.getElementById(containerId);
+  if(imagesArray.length === 0){ el.innerHTML = ''; el.style.display = 'none'; return; }
+  el.style.display = 'flex';
+  el.innerHTML = imagesArray.map((b64, i)=>`
+    <div class="thumb">
+      <img src="data:image/jpeg;base64,${b64}">
+      <button type="button" class="thumb-remove" data-idx="${i}">×</button>
+    </div>`).join('');
+}
+
+async function handleImagePaste(e, mode){
+  const items = (e.clipboardData || window.clipboardData).items;
+  const imageItems = [...items].filter(item => item.type && item.type.startsWith('image/'));
+  if(imageItems.length === 0) return false; // let normal text paste behave as usual
+  e.preventDefault();
+  for(const item of imageItems){
+    try{
+      const blob = item.getAsFile();
+      const base64 = await compressImageToBase64(blob);
+      if(mode === 'add') addModalImages.push(base64);
+      else bulkModalImages.push(base64);
+    }catch(err){ console.error('Image paste error', err); }
+  }
+  if(mode === 'add') renderThumbs(addModalImages, 'm-image-thumbs');
+  else renderThumbs(bulkModalImages, 'bulk-image-thumbs');
+  return true;
+}
+
+// Listen at the document level rather than on the dropzone divs themselves — plain
+// non-editable elements (even with tabindex) often don't reliably receive paste events
+// in Chrome, so this catches a paste anywhere while the relevant modal is open.
+document.addEventListener('paste', (e)=>{
+  const addOpen = document.getElementById('overlay').classList.contains('open');
+  const bulkOpen = document.getElementById('bulk-overlay').classList.contains('open');
+  if(addOpen) handleImagePaste(e, 'add');
+  else if(bulkOpen) handleImagePaste(e, 'bulk');
+});
+
+document.getElementById('m-image-thumbs').addEventListener('click', (e)=>{
+  if(e.target.classList.contains('thumb-remove')){
+    addModalImages.splice(parseInt(e.target.dataset.idx), 1);
+    renderThumbs(addModalImages, 'm-image-thumbs');
+  }
+});
+document.getElementById('bulk-image-thumbs').addEventListener('click', (e)=>{
+  if(e.target.classList.contains('thumb-remove')){
+    bulkModalImages.splice(parseInt(e.target.dataset.idx), 1);
+    renderThumbs(bulkModalImages, 'bulk-image-thumbs');
+  }
+});
+
+const EXTRACT_FIELDS_DESC = `brand, name, colour, size, price (number, current price, no currency symbol), original (number, original/was price if shown — omit or null if not visible), retailer (store name if visible), website (domain if visible), stock (one of "In stock","Low stock","Out of stock","Unknown"), notes (short, optional)`;
+
+async function callClaudeAPI(content){
+  // Attempt 1: the keyless call. This only succeeds when this page is actually being
+  // rendered inside Claude.ai's artifact environment (chat or desktop app), which proxies
+  // and authorizes the request automatically at no cost.
+  try{
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 1000, messages: [{ role:"user", content }] })
+    });
+    return res;
+  }catch(networkErr){
+    // Genuinely couldn't reach the endpoint this way (expected outside Claude.ai) — fall
+    // back to a direct call using the user's own Anthropic API key, which works from any
+    // real hosted or local origin.
+  }
+
+  if(!settings.apiKey){
+    const err = new Error('This isn\'t running inside Claude.ai right now, so it needs your own Anthropic API key to read screenshots. Click "⚙ API Key" above to add one.');
+    err.kind = 'need-key';
+    throw err;
+  }
+
+  try{
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": settings.apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({ model: "claude-haiku-4-5-20251001", max_tokens: 1000, messages: [{ role:"user", content }] })
+    });
+    return res;
+  }catch(networkErr2){
+    const err = new Error("Couldn't reach Claude's API at all — check your internet connection and try again.");
+    err.kind = 'network';
+    throw err;
+  }
+}
+
+async function extractFromImages(base64Images, mode){
+  const promptSingle = `Extract sport-shoe product listing details from these screenshot(s) of an e-commerce product page. The images may show different parts of the same page (price, size selector, further down the page, etc) — combine information across all of them into one item. Return ONLY raw JSON (no markdown fences, no explanation) — a single object with these keys: ${EXTRACT_FIELDS_DESC}. Use null for anything not visible.`;
+  const promptBulk = `Extract sport-shoe product listing details from these screenshot(s), which may show MULTIPLE different products across the images (if some images are just different views of the same product, combine those into one item instead of duplicating). Return ONLY raw JSON (no markdown fences, no explanation) — a JSON array of objects, one per distinct product, each with these keys: ${EXTRACT_FIELDS_DESC}. Use null for anything not visible.`;
+
+  const content = base64Images.map(b64 => ({type:"image", source:{type:"base64", media_type:"image/jpeg", data:b64}}));
+  content.push({type:"text", text: mode==='bulk' ? promptBulk : promptSingle});
+
+  const response = await callClaudeAPI(content);
+
+  if(!response.ok){
+    let bodyText = '';
+    try{ bodyText = (await response.text()).slice(0,300); }catch(e){}
+    let msg = `Claude's API returned an error (HTTP ${response.status}). ${bodyText}`;
+    if(response.status===401) msg = "That API key was rejected (401) — check it's correct in Settings, or that it hasn't been revoked.";
+    if(response.status===429) msg = "Rate limited by the API (429) — wait a moment and try again.";
+    const err = new Error(msg);
+    err.kind = 'api';
+    throw err;
+  }
+
+  let data;
+  try{
+    data = await response.json();
+  }catch(e){
+    const err = new Error("Got a response but couldn't read it as JSON.");
+    err.kind = 'parse-response';
+    throw err;
+  }
+
+  const text = (data.content || []).map(b => b.text || '').join('\n');
+  const cleaned = text.replace(/```json|```/g, '').trim();
+  try{
+    return JSON.parse(cleaned);
+  }catch(e){
+    const err = new Error("Claude responded, but not with valid JSON — try again, or use fewer/clearer screenshots.");
+    err.kind = 'parse-json';
+    err.raw = cleaned.slice(0,300);
+    throw err;
+  }
+}
+
+function fmt(n){ return 'RM ' + Number(n).toFixed(2); }
+function actualDiscount(d){
+  if(!d.original || d.original<=0) return 0;
+  return Math.max(0, Math.round((1 - (d.price/d.original))*100));
+}
+function isHit(d){ return actualDiscount(d) >= Number(d.target||0); }
+
+function populateFilterOptions(){
+  const types = [...new Set(deals.map(d=>d.type))].sort();
+  const genders = [...new Set(deals.map(d=>d.gender))].sort();
+  const brands = [...new Set(deals.map(d=>d.brand))].sort();
+  const retailers = [...new Set(deals.map(d=>d.retailer))].sort();
+  fillSelect('f-type', types);
+  fillSelect('f-gender', genders);
+  fillSelect('f-brand', brands);
+  fillSelect('f-retailer', retailers);
+}
+function fillSelect(id, values){
+  const sel = document.getElementById(id);
+  const current = sel.value;
+  sel.innerHTML = '<option value="">All</option>' + values.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+  if(values.includes(current)) sel.value = current;
+}
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function getFiltered(){
+  const search = document.getElementById('f-search').value.trim().toLowerCase();
+  const type = document.getElementById('f-type').value;
+  const gender = document.getElementById('f-gender').value;
+  const brand = document.getElementById('f-brand').value;
+  const retailer = document.getElementById('f-retailer').value;
+  const min = parseFloat(document.getElementById('f-min').value);
+  const max = parseFloat(document.getElementById('f-max').value);
+  const hitOnly = document.getElementById('f-hitonly').checked;
+  const inStockOnly = document.getElementById('f-instock').checked;
+  const sort = document.getElementById('f-sort').value;
+
+  let out = deals.filter(d=>{
+    if(search && !(`${d.brand} ${d.name}`.toLowerCase().includes(search))) return false;
+    if(type && d.type!==type) return false;
+    if(gender && d.gender!==gender) return false;
+    if(brand && d.brand!==brand) return false;
+    if(retailer && d.retailer!==retailer) return false;
+    if(!isNaN(min) && d.price < min) return false;
+    if(!isNaN(max) && d.price > max) return false;
+    if(hitOnly && !isHit(d)) return false;
+    if(inStockOnly && d.stock==='Out of stock') return false;
+    return true;
+  });
+
+  if(sort==='discount-desc') out.sort((a,b)=> actualDiscount(b)-actualDiscount(a));
+  else if(sort==='price-asc') out.sort((a,b)=> a.price-b.price);
+  else if(sort==='date-desc') out.sort((a,b)=> new Date(b.updated)-new Date(a.updated));
+
+  return out;
+}
+
+function render(){
+  populateFilterOptions();
+  const list = getFiltered();
+  const container = document.getElementById('list');
+  const empty = document.getElementById('empty');
+
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><b>${deals.length}</b><span>Tracked</span></div>
+    <div class="stat hit"><b>${deals.filter(isHit).length}</b><span>Target hit</span></div>
+  `;
+
+  if(deals.length===0){
+    container.style.display='none'; empty.style.display='block';
+    return;
+  }
+  container.style.display='grid'; empty.style.display='none';
+
+  if(list.length===0){
+    container.innerHTML = `<div class="empty" style="grid-column:1/-1;"><h3>No matches</h3><p>Try widening your filters.</p></div>`;
+    return;
+  }
+
+  container.innerHTML = list.map(d=>{
+    const disc = actualDiscount(d);
+    const hit = isHit(d);
+    const pct = Math.min(100, Math.round((disc / Math.max(1,d.target)) * 100));
+    return `
+    <div class="card ${hit?'hit':''}">
+      <div class="card-top">
+        <div>
+          <div class="card-brand">${escapeHtml(d.brand)} · ${escapeHtml(d.type)}</div>
+          <div class="card-name">${escapeHtml(d.name)}</div>
+        </div>
+        <div class="card-tag ${hit?'hit':'watch'}">${hit? '✓ TARGET HIT' : disc+'% OFF'}</div>
+      </div>
+      <div class="meta-row">
+        ${d.gender?`<span class="chip">${escapeHtml(d.gender)}</span>`:''}
+        ${d.colour?`<span class="chip">${escapeHtml(d.colour)}</span>`:''}
+        ${d.size?`<span class="chip">Size ${escapeHtml(d.size)} (${escapeHtml(d.sizesys)})</span>`:''}
+        <span class="chip">${escapeHtml(d.stock)}</span>
+      </div>
+      <div class="price-row">
+        <span class="price-now">${fmt(d.price)}</span>
+        <span class="price-was">${fmt(d.original)}</span>
+        <span class="discount-badge">${disc}% off</span>
+      </div>
+      <div class="meter"><div class="meter-fill ${hit?'hit':''}" style="width:${pct}%;"></div></div>
+      <div class="meter-label"><span>Target: ${d.target}%</span><span>${hit? 'Reached' : pct+'% of goal'}</span></div>
+      ${d.notes? `<div class="notes">"${escapeHtml(d.notes)}"</div>` : ''}
+      <div class="card-footer">
+        <a class="retailer-link" href="${d.url? escapeHtml(d.url) : '#'}" target="_blank" rel="noopener">${escapeHtml(d.retailer)} ↗</a>
+        <div class="card-actions">
+          <button class="icon-btn" onclick="editDeal('${d.id}')" title="Edit">✎</button>
+          <button class="icon-btn" onclick="deleteDeal('${d.id}')" title="Delete">✕</button>
+        </div>
+      </div>
+      <div class="updated">Updated ${new Date(d.updated).toLocaleDateString()}</div>
+    </div>`;
+  }).join('');
+}
+
+const DEFAULT_TARGET_DISCOUNT = 20;
+
+function setSelectOtherField(selectId, wrapId, otherId, value){
+  const select = document.getElementById(selectId);
+  const otherWrap = document.getElementById(wrapId);
+  const otherInput = document.getElementById(otherId);
+  const presetValues = [...select.options].map(o=>o.value).filter(v=>v && v!=='__other__');
+  if(value && presetValues.includes(value)){
+    select.value = value; otherWrap.style.display = 'none'; otherInput.value = '';
+  } else if(value){
+    select.value = '__other__'; otherWrap.style.display = ''; otherInput.value = value;
+  } else {
+    select.value = ''; otherWrap.style.display = 'none'; otherInput.value = '';
+  }
+}
+function getSelectOtherValue(selectId, otherId){
+  const select = document.getElementById(selectId);
+  if(select.value === '__other__') return document.getElementById(otherId).value.trim();
+  return select.value;
+}
+[['m-retailer','m-retailer-other-wrap'], ['m-colour','m-colour-other-wrap'], ['m-size','m-size-other-wrap']].forEach(([selId,wrapId])=>{
+  document.getElementById(selId).addEventListener('change', function(){
+    document.getElementById(wrapId).style.display = this.value === '__other__' ? '' : 'none';
+  });
+});
+const setRetailerField = (v)=> setSelectOtherField('m-retailer','m-retailer-other-wrap','m-retailer-other', v);
+const getRetailerValue = ()=> getSelectOtherValue('m-retailer','m-retailer-other');
+const setColourField = (v)=> setSelectOtherField('m-colour','m-colour-other-wrap','m-colour-other', v);
+const getColourValue = ()=> getSelectOtherValue('m-colour','m-colour-other');
+const setSizeField = (v)=> setSelectOtherField('m-size','m-size-other-wrap','m-size-other', v);
+const getSizeValue = ()=> getSelectOtherValue('m-size','m-size-other');
+
+function openModal(id){
+  editingId = id || null;
+  clearFieldErrors();
+  document.getElementById('m-import').value = '';
+  setImportHint("Paste a link/snippet Claude gave you, or — for sites Claude can't fetch (e.g. Under Armour) — copy the product title + price text straight off the page and paste it here.", '');
+  addModalImages = [];
+  renderThumbs(addModalImages, 'm-image-thumbs');
+  document.getElementById('modal-title').textContent = id ? 'Edit deal' : 'Add a deal';
+  if(id){
+    const d = deals.find(x=>x.id===id);
+    document.getElementById('m-brand').value = d.brand;
+    document.getElementById('m-name').value = d.name;
+    document.getElementById('m-type').value = d.type;
+    document.getElementById('m-gender').value = d.gender;
+    setColourField(d.colour);
+    setSizeField(d.size);
+    document.getElementById('m-sizesys').value = d.sizesys;
+    document.getElementById('m-price').value = d.price;
+    document.getElementById('m-original').value = d.original;
+    document.getElementById('m-target').value = d.target;
+    document.getElementById('m-stock').value = d.stock;
+    setRetailerField(d.retailer);
+    document.getElementById('m-website').value = d.website;
+    document.getElementById('m-url').value = d.url;
+    document.getElementById('m-notes').value = d.notes;
+  } else {
+    ['m-brand','m-name','m-website','m-url','m-notes'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('m-price').value='';
+    document.getElementById('m-original').value='';
+    document.getElementById('m-target').value = DEFAULT_TARGET_DISCOUNT; // pre-filled — leave as-is to accept the default
+    document.getElementById('m-type').value='Running';
+    document.getElementById('m-gender').value="Men's";
+    document.getElementById('m-sizesys').value='UK';
+    document.getElementById('m-stock').value='In stock';
+    setRetailerField('');
+    setColourField('');
+    setSizeField('');
+  }
+  document.getElementById('overlay').classList.add('open');
+}
+function closeModal(){ document.getElementById('overlay').classList.remove('open'); editingId=null; }
+
+function setImportHint(msg, type){
+  const el = document.getElementById('import-hint');
+  el.textContent = msg;
+  el.className = 'import-hint' + (type ? ' '+type : '');
+}
+
+const BRAND_ALIASES = {
+  'Nike':'Nike', 'Adidas':'Adidas', 'Puma':'Puma', 'Under Armour':'Under Armour', 'UA':'Under Armour',
+  'On':'On', 'New Balance':'New Balance', 'Asics':'Asics', 'Reebok':'Reebok', 'Skechers':'Skechers',
+  'Fila':'Fila', 'Converse':'Converse', 'Vans':'Vans', 'Mizuno':'Mizuno', 'Salomon':'Salomon',
+  'Hoka':'Hoka', 'Brooks':'Brooks', 'Li-Ning':'Li-Ning', 'Anta':'Anta', '361':'361'
+};
+
+function parsePlainText(raw){
+  const lines = raw.split('\n').map(l=>l.trim()).filter(Boolean);
+  const priceMatches = [...raw.matchAll(/RM\s?([\d,]+\.?\d{0,2})/gi)].map(m=>parseFloat(m[1].replace(/,/g,'')));
+  const uniquePrices = [...new Set(priceMatches)].sort((a,b)=>a-b);
+
+  let brand = '';
+  for(const alias of Object.keys(BRAND_ALIASES)){
+    if(new RegExp('\\b'+alias.replace(/\s/g,'\\s')+'\\b','i').test(raw)){ brand = BRAND_ALIASES[alias]; break; }
+  }
+  const colourMatch = raw.match(/colou?r[:\s]+([A-Za-z0-9 \/\-]+)/i);
+
+  // Best-guess item name: longest line that isn't just a price and isn't the brand alone,
+  // with any trailing/embedded "RM123" price mentions and stray punctuation stripped out.
+  const nameLine = lines
+    .filter(l => !/^RM\s?[\d,]/i.test(l) && l.length > 4)
+    .sort((a,b)=>b.length-a.length)[0] || '';
+  const cleanedName = nameLine
+    .replace(/RM\s?[\d,]+\.?\d{0,2}/gi, '')
+    .replace(/[,|\-–]\s*$/,'')
+    .replace(/\s{2,}/g,' ')
+    .trim();
+
+  return {
+    brand,
+    name: cleanedName,
+    colour: colourMatch ? colourMatch[1].trim() : '',
+    price: uniquePrices.length ? uniquePrices[0] : null,
+    original: uniquePrices.length > 1 ? uniquePrices[uniquePrices.length-1] : null
+  };
+}
+
+function applyExtractedObjectToForm(obj){
+  const directMap = {brand:'m-brand', name:'m-name', type:'m-type', gender:'m-gender',
+    sizesys:'m-sizesys', price:'m-price', original:'m-original', stock:'m-stock',
+    website:'m-website', url:'m-url', notes:'m-notes'};
+  let filled = 0;
+  Object.keys(directMap).forEach(key=>{
+    if(obj[key]!==undefined && obj[key]!==null && obj[key]!==''){
+      document.getElementById(directMap[key]).value = obj[key];
+      filled++;
+    }
+  });
+  if(obj.retailer){ setRetailerField(obj.retailer); filled++; }
+  if(obj.colour){ setColourField(obj.colour); filled++; }
+  if(obj.size){ setSizeField(String(obj.size)); filled++; }
+  return filled;
+}
+
+async function fillFromImport(){
+  if(addModalImages.length > 0){
+    setImportHint(`Reading ${addModalImages.length} screenshot(s)…`, '');
+    document.getElementById('btn-import').disabled = true;
+    document.getElementById('btn-import').textContent = 'Reading…';
+    try{
+      const obj = await extractFromImages(addModalImages, 'single');
+      const filled = applyExtractedObjectToForm(obj);
+      setImportHint(`Filled ${filled} field(s) from ${addModalImages.length} screenshot(s). Check them, then save.`, 'success');
+    }catch(e){
+      console.error(e);
+      setImportHint(e.message || "Couldn't read those screenshot(s) — try again, or paste a link/text instead.", 'error');
+    }
+    document.getElementById('btn-import').disabled = false;
+    document.getElementById('btn-import').textContent = 'Fill form';
+    return;
+  }
+
+  const raw = document.getElementById('m-import').value.trim();
+  if(!raw){
+    setImportHint("Paste a product link, a details snippet, or screenshot(s) below, then click Fill form.", '');
+    return;
+  }
+  // Looks like a bare URL, not a details snippet
+  if(/^https?:\/\//i.test(raw) && !raw.includes('{')){
+    setImportHint("This tool can't fetch that link itself — paste it in your chat with Claude instead, and paste the snippet it sends back here.", 'error');
+    return;
+  }
+  // Try structured JSON first
+  let obj = null;
+  try{
+    const match = raw.match(/\{[\s\S]*\}/);
+    obj = JSON.parse(match ? match[0] : raw);
+  }catch(e){ /* fall through to plain-text heuristics */ }
+
+  if(obj){
+    const filled = applyExtractedObjectToForm(obj);
+    setImportHint(`Filled ${filled} field(s) from the snippet. Check them, then save (target discount and original price already default sensibly if you leave them).`, 'success');
+    return;
+  }
+
+  // Fallback: raw text copied straight from a product page (e.g. sites Claude can't fetch, like Under Armour)
+  const guess = parsePlainText(raw);
+  let filled = 0;
+  if(guess.brand){ document.getElementById('m-brand').value = guess.brand; filled++; }
+  if(guess.name){ document.getElementById('m-name').value = guess.name; filled++; }
+  if(guess.colour){ setColourField(guess.colour); filled++; }
+  if(guess.price!==null){ document.getElementById('m-price').value = guess.price; filled++; }
+  if(guess.original!==null){ document.getElementById('m-original').value = guess.original; filled++; }
+
+  if(filled===0){
+    setImportHint("Couldn't pick anything useful out of that text. Try pasting a screenshot instead, or fill the fields manually.", 'error');
+  } else {
+    setImportHint(`Guessed ${filled} field(s) from the pasted text — this is a rough parse, so double-check them (especially price/original), then fill in the rest.`, 'success');
+  }
+}
+
+let isSaving = false;
+
+const REQUIRED_FIELDS = [
+  {id:'m-brand', label:'Brand', type:'text'},
+  {id:'m-name', label:'Item name', type:'text'},
+  {id:'m-price', label:'Current price', type:'number'},
+  {id:'m-retailer', label:'Retailer', type:'select'}
+];
+
+function clearFieldErrors(){
+  REQUIRED_FIELDS.forEach(f=>{
+    document.getElementById(f.id).classList.remove('field-error');
+  });
+  document.getElementById('m-retailer-other').classList.remove('field-error');
+  const box = document.getElementById('form-error-summary');
+  if(box){ box.remove(); }
+}
+
+// Clear a field's error state as soon as the user edits it
+REQUIRED_FIELDS.forEach(f=>{
+  document.getElementById(f.id).addEventListener('input', ()=>{
+    document.getElementById(f.id).classList.remove('field-error');
+  });
+});
+document.getElementById('m-retailer-other').addEventListener('input', ()=>{
+  document.getElementById('m-retailer').classList.remove('field-error');
+  document.getElementById('m-retailer-other').classList.remove('field-error');
+});
+
+async function saveDeal(){
+  if(isSaving) return; // block double-clicks
+
+  clearFieldErrors();
+
+  const brand = document.getElementById('m-brand').value.trim();
+  const name = document.getElementById('m-name').value.trim();
+  const price = parseFloat(document.getElementById('m-price').value);
+  let original = parseFloat(document.getElementById('m-original').value);
+  let target = parseFloat(document.getElementById('m-target').value);
+  const retailer = getRetailerValue();
+
+  const values = {'m-brand':brand, 'm-name':name, 'm-price':price, 'm-retailer':retailer};
+  const missing = REQUIRED_FIELDS.filter(f=>{
+    const v = values[f.id];
+    return f.type==='number' ? isNaN(v) : !v;
+  });
+
+  if(missing.length){
+    missing.forEach(f=>{
+      document.getElementById(f.id).classList.add('field-error');
+      if(f.id==='m-retailer') document.getElementById('m-retailer-other').classList.add('field-error');
+    });
+    const firstField = document.getElementById(missing[0].id);
+    const summary = document.createElement('div');
+    summary.id = 'form-error-summary';
+    summary.className = 'form-error-summary';
+    summary.textContent = 'Missing or invalid: ' + missing.map(f=>f.label).join(', ');
+    firstField.closest('.modal-grid').before(summary);
+    firstField.scrollIntoView({behavior:'smooth', block:'center'});
+    firstField.focus();
+    return;
+  }
+
+  // Original price left blank — assume same as current price (0% off) until updated, with confirmation.
+  if(isNaN(original)){
+    const proceed = confirm(`No original price entered — assume it's the same as the current price (RM${price.toFixed(2)}) for now? This means 0% discount until you update the original price later.\n\nOK = use RM${price.toFixed(2)} as the original price\nCancel = go back and enter it`);
+    if(!proceed){
+      document.getElementById('m-original').focus();
+      return;
+    }
+    original = price;
+    document.getElementById('m-original').value = original;
+  }
+
+  // Target discount left blank — fall back to the default shown when the form opened.
+  if(isNaN(target)){
+    target = DEFAULT_TARGET_DISCOUNT;
+    document.getElementById('m-target').value = target;
+  }
+
+  const data = {
+    id: editingId || crypto.randomUUID(),
+    brand, name,
+    type: document.getElementById('m-type').value,
+    gender: document.getElementById('m-gender').value,
+    colour: getColourValue(),
+    size: getSizeValue(),
+    sizesys: document.getElementById('m-sizesys').value,
+    price, original, target,
+    stock: document.getElementById('m-stock').value,
+    retailer,
+    website: document.getElementById('m-website').value.trim(),
+    url: document.getElementById('m-url').value.trim(),
+    notes: document.getElementById('m-notes').value.trim(),
+    updated: new Date().toISOString()
+  };
+
+  const snapshot = deals.slice(); // for rollback on failure
+  if(editingId){
+    deals = deals.map(d=> d.id===editingId ? data : d);
+  } else {
+    deals.push(data);
+  }
+
+  isSaving = true;
+  const btn = document.getElementById('btn-save');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  const ok = await saveDeals();
+
+  btn.disabled = false;
+  btn.textContent = 'Save deal';
+  isSaving = false;
+
+  if(!ok){
+    deals = snapshot; // roll back the local change
+    showToast("Couldn't save — storage error. Try again.", 'error');
+    return;
+  }
+
+  const wasEdit = !!editingId;
+  closeModal();
+  render();
+  showToast(wasEdit ? 'Deal updated ✓' : 'Deal saved ✓', 'success');
+}
+
+function editDeal(id){ openModal(id); }
+async function deleteDeal(id){
+  if(!confirm('Remove this deal from your watchlist?')) return;
+  const snapshot = deals.slice();
+  deals = deals.filter(d=>d.id!==id);
+  const ok = await saveDeals();
+  if(!ok){
+    deals = snapshot;
+    showToast("Couldn't delete — storage error. Try again.", 'error');
+    return;
+  }
+  render();
+  showToast('Deal removed ✓', 'success');
+}
+
+function openBulk(){
+  document.getElementById('bulk-input').value = '';
+  document.getElementById('bulk-hint').textContent = '';
+  document.getElementById('bulk-hint').className = 'import-hint';
+  bulkModalImages = [];
+  renderThumbs(bulkModalImages, 'bulk-image-thumbs');
+  document.getElementById('bulk-overlay').classList.add('open');
+}
+function closeBulk(){ document.getElementById('bulk-overlay').classList.remove('open'); }
+
+function openSettings(){
+  document.getElementById('settings-apikey').value = settings.apiKey || '';
+  document.getElementById('settings-hint').textContent = '';
+  document.getElementById('settings-hint').className = 'import-hint';
+  document.getElementById('settings-overlay').classList.add('open');
+}
+function closeSettings(){ document.getElementById('settings-overlay').classList.remove('open'); }
+
+async function saveApiKey(){
+  const key = document.getElementById('settings-apikey').value.trim();
+  const hint = document.getElementById('settings-hint');
+  settings.apiKey = key;
+  const ok = await saveSettings();
+  if(!ok){
+    hint.textContent = "Couldn't save the key — storage error. Try again.";
+    hint.className = 'import-hint error';
+    return;
+  }
+  closeSettings();
+  showToast(key ? 'API key saved ✓' : 'API key cleared ✓', 'success');
+}
+async function removeApiKey(){
+  settings.apiKey = '';
+  await saveSettings();
+  document.getElementById('settings-apikey').value = '';
+  closeSettings();
+  showToast('API key removed ✓', 'success');
+}
+
+document.getElementById('btn-settings').onclick = openSettings;
+document.getElementById('btn-settings-cancel').onclick = closeSettings;
+document.getElementById('btn-settings-save').onclick = saveApiKey;
+document.getElementById('btn-settings-remove').onclick = removeApiKey;
+document.getElementById('settings-overlay').onclick = (e)=>{ if(e.target.id==='settings-overlay') closeSettings(); };
+
+function applyBulkArray(arr, defaultTarget){
+  let added = 0;
+  arr.forEach(obj=>{
+    if(!obj.brand || !obj.name || !obj.price) return; // original now optional — defaults to price below
+    const price = parseFloat(obj.price);
+    const original = (obj.original!==undefined && obj.original!==null && obj.original!=='') ? parseFloat(obj.original) : price;
+    deals.push({
+      id: crypto.randomUUID(),
+      brand: obj.brand, name: obj.name,
+      type: obj.type || 'Other',
+      gender: obj.gender || "Unisex",
+      colour: obj.colour || '',
+      size: obj.size ? String(obj.size) : '',
+      sizesys: obj.sizesys || 'UK',
+      price, original,
+      target: obj.target!==undefined && obj.target!==null && obj.target!=='' ? parseFloat(obj.target) : defaultTarget,
+      stock: obj.stock || 'Unknown',
+      retailer: obj.retailer || '',
+      website: obj.website || '',
+      url: obj.url || '',
+      notes: obj.notes || '',
+      updated: new Date().toISOString()
+    });
+    added++;
+  });
+  return added;
+}
+
+async function saveBulk(){
+  if(isSaving) return;
+
+  const defaultTarget = parseFloat(document.getElementById('bulk-target').value) || DEFAULT_TARGET_DISCOUNT;
+  const hint = document.getElementById('bulk-hint');
+  const btn = document.getElementById('btn-bulk-save');
+
+  let arr;
+
+  if(bulkModalImages.length > 0){
+    btn.disabled = true;
+    btn.textContent = 'Reading…';
+    hint.textContent = `Reading ${bulkModalImages.length} screenshot(s)…`;
+    hint.className = 'import-hint';
+    try{
+      arr = await extractFromImages(bulkModalImages, 'bulk');
+      if(!Array.isArray(arr)) arr = [arr];
+    }catch(e){
+      console.error(e);
+      btn.disabled = false; btn.textContent = 'Import all';
+      hint.textContent = e.message || "Couldn't read those screenshot(s) — try again, or paste a JSON array instead.";
+      hint.className = 'import-hint error';
+      return;
+    }
+    btn.disabled = false;
+    btn.textContent = 'Import all';
+  } else {
+    const raw = document.getElementById('bulk-input').value.trim();
+    try{
+      const match = raw.match(/\[[\s\S]*\]/);
+      arr = JSON.parse(match ? match[0] : raw);
+      if(!Array.isArray(arr)) throw new Error('not an array');
+    }catch(e){
+      hint.textContent = "Couldn't read that as a list of items. Make sure it's a JSON array like [ {...}, {...} ], or paste screenshots instead.";
+      hint.className = 'import-hint error';
+      return;
+    }
+  }
+
+  const snapshot = deals.slice();
+  const added = applyBulkArray(arr, defaultTarget);
+
+  if(added===0){
+    hint.textContent = "No valid items found — each item needs at least brand, name, and current price.";
+    hint.className = 'import-hint error';
+    return;
+  }
+
+  isSaving = true;
+  btn.disabled = true;
+  btn.textContent = 'Importing…';
+
+  const ok = await saveDeals();
+
+  btn.disabled = false;
+  btn.textContent = 'Import all';
+  isSaving = false;
+
+  if(!ok){
+    deals = snapshot;
+    hint.textContent = "Couldn't save — there was a storage error. Please try again in a moment.";
+    hint.className = 'import-hint error';
+    return;
+  }
+
+  closeBulk();
+  render();
+  showToast(`Imported ${added} item(s) ✓`, 'success');
+}
+
+async function dedupeDeals(){
+  const seen = new Map();
+  deals.forEach(d=>{
+    const key = [d.brand, d.name, d.price, d.original, d.retailer, d.colour, d.size].join('|').toLowerCase();
+    const existing = seen.get(key);
+    // Keep the most recently updated copy of each duplicate
+    if(!existing || new Date(d.updated) > new Date(existing.updated)){
+      seen.set(key, d);
+    }
+  });
+  const deduped = Array.from(seen.values());
+  const removedCount = deals.length - deduped.length;
+  if(removedCount===0){
+    alert('No duplicates found.');
+    return;
+  }
+  if(!confirm(`Found ${removedCount} duplicate item(s). Remove them and keep one copy of each?`)) return;
+
+  const snapshot = deals.slice();
+  deals = deduped;
+  const ok = await saveDeals();
+  if(!ok){
+    deals = snapshot;
+    showToast("Couldn't save — storage error. Try again.", 'error');
+    return;
+  }
+  render();
+  showToast(`Removed ${removedCount} duplicate(s) ✓`, 'success');
+}
+document.getElementById('btn-dedupe').onclick = dedupeDeals;
+
+function exportBackup(){
+  if(deals.length===0){ showToast('Nothing to export yet.', 'error'); return; }
+  const blob = new Blob([JSON.stringify(deals, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `solewatch-backup-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Backup downloaded ✓', 'success');
+}
+
+async function handleImportFile(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  try{
+    const text = await file.text();
+    const arr = JSON.parse(text);
+    if(!Array.isArray(arr)) throw new Error('Backup file must contain a list of items.');
+
+    const snapshot = deals.slice();
+    deals = deals.concat(arr.map(item => ({...item, id: item.id || crypto.randomUUID()})));
+
+    const ok = await saveDeals();
+    if(!ok){
+      deals = snapshot;
+      showToast("Couldn't restore — storage error. Try again.", 'error');
+    } else {
+      render();
+      showToast(`Restored ${arr.length} item(s) ✓ — run "Remove duplicates" if any overlap with existing items`, 'success');
+    }
+  }catch(err){
+    showToast('That file doesn\'t look like a valid SoleWatch backup.', 'error');
+  }
+  e.target.value = '';
+}
+
+document.getElementById('btn-export').onclick = exportBackup;
+document.getElementById('btn-import-file').onclick = ()=> document.getElementById('import-file-input').click();
+document.getElementById('import-file-input').addEventListener('change', handleImportFile);
+
+document.getElementById('btn-bulk').onclick = openBulk;
+document.getElementById('btn-bulk-cancel').onclick = closeBulk;
+document.getElementById('btn-bulk-save').onclick = saveBulk;
+document.getElementById('bulk-overlay').onclick = (e)=>{ if(e.target.id==='bulk-overlay') closeBulk(); };
+
+document.getElementById('btn-import').onclick = fillFromImport;
+document.getElementById('btn-add').onclick = ()=>openModal();
+document.getElementById('btn-cancel').onclick = closeModal;
+document.getElementById('btn-save').onclick = saveDeal;
+document.getElementById('overlay').onclick = (e)=>{ if(e.target.id==='overlay') closeModal(); };
+['f-search','f-type','f-gender','f-brand','f-retailer','f-min','f-max','f-sort','f-hitonly','f-instock'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', render);
+  document.getElementById(id).addEventListener('change', render);
+});
+
+loadDeals();
+loadSettings();
+</script>
+</body>
+</html>
